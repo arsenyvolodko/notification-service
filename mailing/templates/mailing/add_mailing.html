@@ -1,0 +1,176 @@
+<!-- add_project.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+{% csrf_token %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add new mailing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            width: 400px; /* Match the form width */
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+
+        input,
+        select,
+        textarea {
+            width: calc(100% - 16px);
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        textarea {
+            width: 100%; /* 100% width */
+            min-width: calc(100% - 16px); /* Min width excluding padding */
+            max-width: calc(100% - 16px); /* Max width excluding padding */
+            height: 80px; /* Initial height */
+            min-height: 80px; /* Min height */
+            max-height: 200px; /* Max height */
+            resize: vertical; /* Allow vertical resizing */
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+{% if error %}
+    <h1>
+        <div class="error-message">{{ error }}</div>
+    </h1>
+{% endif %}
+
+<form method="POST">
+    {% csrf_token %}
+    {% if mailing %}
+        <h1>Редактировать рассылку</h1>
+    {% else %}
+        <h1>Новая рассылка</h1>
+    {% endif %}
+
+    <label for="text">Текст рассылки</label>
+    {{ form.text }}
+
+    <label for="start_time" id="start_time">Время начала рассылки</label>
+    <input type="datetime-local" id="start_time" value="{{ mailing.start_time|date:'Y-m-d\TH:i' }}" name="start_time">
+
+    <label for="end_time" id="end_time">Время окончания рассылки</label>
+    <input type="datetime-local" id="end_time" value="{{ mailing.end_time|date:'Y-m-d\TH:i' }}" name="end_time">
+
+    <label for="codes_filter">Фильтр: допустимые коды операторов (Перечислите через запятую)</label>
+    <input id="codes_filter" name="codes_filter" value="{{ mailing.codes_filter|join:', ' }}"
+           placeholder="910, 810, 880"></input>
+
+    <label for="tags_filter">Фильтр: допустимые теги клиенты (Перечислите через запятую)</label>
+    <input id="tags_filter" name="tags_filter" value="{{ mailing.tags_filter|join:', ' }}"></input>
+
+    {% if mailing %}
+        <button type="submit">Сохранить</button>
+    {% else %}
+        <button type="submit">Добавить</button>
+    {% endif %}
+
+</form>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const codesInput = document.getElementById('codes_filter');
+        const tagsInput = document.getElementById('tags_filter');
+        const warningMessage1 = document.createElement('div');
+        warningMessage1.style.color = 'red';
+        const warningMessage2 = document.createElement('div');
+        warningMessage2.style.color = 'red';
+        codesInput.parentNode.insertBefore(warningMessage1, codesInput.previousSibling);
+        tagsInput.parentNode.insertBefore(warningMessage2, tagsInput.previousSibling);
+
+        codesInput.addEventListener('input', function () {
+            const regex = /^(\d{3}(,\s\d{3})*)?$/;
+            if (regex.test(codesInput.value)) {
+                warningMessage1.textContent = '';
+            } else {
+                warningMessage1.textContent = 'Формат не соответствует. Допустимые значения: пустое поле или 3-х значные числа через запятую и пробел.';
+            }
+        });
+
+        tagsInput.addEventListener('input', function () {
+            const regex = /^(([a-zA-Z]*)(,\s[a-zA-Z]+)*)?$/;
+            if (regex.test(tagsInput.value)) {
+                warningMessage2.textContent = '';
+            } else {
+                warningMessage2.textContent = 'Формат не соответствует. Допустимые значения: теги на английском языке через запятую и пробел.';
+            }
+        })
+    });
+
+    document.querySelector('form').addEventListener('submit', function (e) {
+        const codesFilterInput = document.getElementById('codes_filter');
+        const tagsFilterInput = document.getElementById('tags_filter');
+        const codesFilterValue = codesFilterInput.value;
+        const tagsFilterValue = tagsFilterInput.value;
+        if ((!codesFilterValue || codesFilterValue.match(/^(\d{3}(,\s\d{3})*)?$/)) &&
+            (!tagsFilterValue || tagsFilterValue.match(/^(([a-zA-Z]*)(,\s[a-zA-Z]+)*)?$/))) {
+            return true;
+        } else {
+            e.preventDefault();
+            alert('Формат не соответствует требуемому.');
+            return false;
+        }
+    });
+</script>
+
+
+</body>
+
+</html>

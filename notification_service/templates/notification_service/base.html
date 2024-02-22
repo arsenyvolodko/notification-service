@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Управление Рассылками{% endblock %}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+
+        .menu {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #e3e8e8;
+        }
+
+        .menu a {
+            text-decoration: none;
+            margin-right: 15px;
+            color: #0056b3;
+            font-weight: bold;
+        }
+
+        .menu a:hover {
+            color: #023e8a;
+        }
+
+        .content h2 {
+            color: #023e8a;
+        }
+
+        .block h2 {
+            color: #023e8a;
+        }
+
+        .block div {
+            padding: 5px;
+            margin-bottom: 7px;
+            background-color: #e3e8e8;
+            border-radius: 5px;
+        }
+
+        .block div h3 {
+            color: #007bff;
+            margin-left: 10px;
+        }
+
+        .block div p {
+            margin-left: 20px;
+            font-size: 14px;
+        }
+
+        .content {
+            width: 80%;
+            max-width: 800px;
+            background-color: #ffffff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .block {
+            margin-bottom: 30px;
+            border-left: 4px solid #007bff;
+            padding-left: 15px;
+        }
+
+        .block h2 {
+            color: #023e8a;
+        }
+
+        .block div {
+            padding: 5px;
+            margin-bottom: 7px;
+            background-color: #e3e8e8;
+            border-radius: 5px;
+        }
+
+        .block div h3 {
+            color: #007bff;
+            margin-left: 10px;
+        }
+
+        .block div p {
+            margin-left: 20px;
+            font-size: 14px;
+        }
+
+        .delete-button,
+        .edit-button,
+        .add-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .delete-button,
+        .edit-button {
+            font-size: 10px
+        }
+
+
+        .edit-button:hover,
+        .add-button:hover {
+            background-color: #0056b3;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: flex-start;
+            margin-left: 5px;
+            gap: 5px;
+        }
+
+        .delete-button {
+            background-color: #dc3545;
+        }
+
+        .delete-button:hover {
+            background-color: #c82333;
+        }
+
+
+        .hidden {
+            display: none;
+        }
+
+        .show-more-button {
+            display: block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            margin: 10px 0;
+            transition: background-color 0.3s;
+        }
+
+        .show-more-button:hover {
+            background-color: #0056b3;
+        }
+
+        .auth-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav class="menu">
+        <a href="{% url 'home' %}">Домашняя страница</a>
+        <a href="{% url 'mailing:mailing' %}">Рассылки</a>
+        <a href="{% url 'clients:clients' %}">Клиенты</a>
+    </nav>
+</header>
+
+{% block content %}{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!-- add_project.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+{% csrf_token %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add new client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            width: 400px;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+
+        input,
+        select,
+        textarea {
+            width: calc(100% - 16px);
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        textarea {
+            width: 100%;
+            min-width: calc(100% - 16px);
+            max-width: calc(100% - 16px);
+            height: 80px;
+            min-height: 80px;
+            max-height: 200px;
+            resize: vertical;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+{% if error %}
+    <h1>
+        <div class="error-message">{{ error }}</div>
+    </h1>
+{% endif %}
+
+<form method="POST">
+    {% csrf_token %}
+    {% if client %}
+        <h1>Редактировать Клиента</h1>
+    {% else %}
+        <h1>Новый Клиент</h1>
+    {% endif %}
+
+    <label for="phone_number">Номер Телефона (без кода страны)</label>
+    <input id="phone_number" name="phone_number" value="{{ client.phone_number|stringformat:"s"|slice:"1:" }}" placeholder="9101459029">
+
+    <label for="tag">Тэг</label>
+    {{ form.tag }}
+
+    <label for="timezone">Часовой пояс</label>
+    {{ form.timezone }}
+
+    <button type="submit">Добавить</button>
+
+
+</form>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const phone_input = document.getElementById('phone_number');
+        const warningMessage = document.createElement('div');
+        warningMessage.style.color = 'red';
+        warningMessage.style.marginBottom = '5px';
+        phone_input.parentNode.insertBefore(warningMessage, phone_input.nextSibling);
+
+        phone_input.addEventListener('input', function () {
+            const regex = /^(\d{10})?$/;
+            if (regex.test(phone_input.value)) {
+                warningMessage.textContent = '';
+            } else {
+                warningMessage.textContent = 'Формат не соответствует. Формат: 10 цифр';
+            }
+        });
+
+    });
+
+    document.querySelector('form').addEventListener('submit', function (e) {
+        const phoneNumberInput = document.getElementById('phone_number');
+        const codesFilterValue = phoneNumberInput.value;
+        if (codesFilterValue.match(/^\d{10}$/)) {
+            return true;
+        } else {
+            e.preventDefault();
+            alert('Формат не соответствует требуемому.');
+            return false;
+        }
+    });
+</script>
+</body>
+</html>

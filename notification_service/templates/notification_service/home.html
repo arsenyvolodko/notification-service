@@ -1,0 +1,43 @@
+{% extends 'notification_service/base.html' %}
+{% load my_filters %}
+
+
+{% block content %}
+    <header>
+        <h1>Система Управления Рассылками</h1>
+        {% if session.userinfo.name %}
+            <a class="auth-button" href="{% url 'logout' %}">Logout</a>
+        {% else %}
+            <a class="auth-button" href="{% url 'login' %}">Login</a>
+        {% endif %}
+    </header>
+    <section class="content" id="create-mailing">
+        <h2>Рассылки</h2>
+        {% if not session.userinfo.name %}
+            <p>Для просмотра рассылок необходимо авторизоваться как администратор</p>
+        {% else %}
+            <p>Всего рассылок: {{ mailing_num }}</p>
+            <p>Перейдите на страницу "Рассылки" для более подробной информации</p>
+        {% endif %}
+    </section>
+    <section class="content" id="view-clients">
+        <h2>Клиенты</h2>
+        {% if not session.userinfo.name %}
+            <p>Для просмотра клиентов необходимо авторизоваться как администратор</p>
+        {% else %}
+            <p>Всего клиентов: {{ clients_num }}</p>
+            <p>Перейдите на страницу "Клиенты" для более подробной информации</p>
+        {% endif %}
+    </section>
+    <section class="content" id="collect-stats">
+        <h2>Статистика</h2>
+        {% if not session.userinfo.name %}
+            <p>Для просмотра статистики необходимо авторизоваться как администратор</p>
+        {% else %}
+            <p>Успешно отправлено: {{ messages|get_spec_msgs_stats:"sent_messages" }}</p>
+            <p>Не отправлены и уже не будут: {{ messages|get_spec_msgs_stats:"failed_messages" }} сообщений</p>
+            <p>Ожидают отправки: {{ messages|get_spec_msgs_stats:"waiting_messages" }} сообщений</p>
+            <p>Ожидают повторной отправки: {{ messages|get_spec_msgs_stats:"failed_waiting_messages" }} сообщений</p>
+        {% endif %}
+    </section>
+{% endblock %}

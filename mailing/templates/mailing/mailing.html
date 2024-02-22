@@ -1,0 +1,169 @@
+{% extends 'notification_service/base.html' %}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f7f6;
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        flex-direction: column;
+    }
+</style>
+
+{% load my_filters %}
+
+{% block content %}
+    <header>
+        <h1>Система Управления Рассылками</h1>
+        <a class="auth-button" href="{% url 'logout' %}">Logout</a>
+    </header>
+    <div class="content">
+    <div class="block">
+        <h2>Будущие рассылки</h2>
+        <p><a class="add-button" href="{% url 'mailing:create_mailing' %}">Добавить рассылку</a></p>
+        {% for mailing in future_mailings %}
+            <div class="future-mailing-item{% if forloop.counter > 3 %} hidden{% endif %}">
+                <h3>Рассылка №{{ mailing.id }}</h3>
+                <p>Текст рассылки: {{ mailing.text|truncatechars:50 }}</p>
+                <p>Начало рассылки: {{ mailing.start_time }}</p>
+                <p>Окончание рассылки: {{ mailing.end_time }}</p>
+                {% if mailing.codes_filter %}
+                    <p>Фильтр по кодам: {{ mailing.codes_filter }}</p>
+                {% endif %}
+                {% if mailing.tags_filter %}
+                    <p>Фильтр по тэгам: {{ mailing.tags_filter }}</p>
+                {% endif %}
+                <div>Статистика:</div>
+                <p>Успешно
+                    отправлены: {{ future_messages|get_msgs_stats_for_mailing:mailing|get_spec_msgs_stats:"sent_messages" }}
+                    сообщений</p>
+                <p>Не отправлены и уже не
+                    будут: {{ future_messages|get_msgs_stats_for_mailing:mailing|get_spec_msgs_stats:"failed_messages" }}
+                    сообщений</p>
+                <p>Ожидают
+                    отправки: {{ future_messages|get_msgs_stats_for_mailing:mailing|get_spec_msgs_stats:"waiting_messages" }}
+                    сообщений</p>
+                <p>Ожидают повторной
+                    отправки: {{ future_messages|get_msgs_stats_for_mailing:mailing|get_spec_msgs_stats:"failed_waiting_messages" }}
+                    сообщений</p>
+                <div class="buttons">
+                    <a class="edit-button" href="{% url 'mailing:update_mailing' mailing.id %}">Редактировать</a>
+                    <form method="POST" action="{% url 'mailing:delete_mailing' mailing.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="delete-button">Удалить</button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+        {% if future_mailings|length > 3 %}
+            <a href="#" class="show-more-button" id="show-more-future">Показать больше</a>
+        {% endif %}
+    </div>
+
+    <div class="block">
+        <h2>Текущие рассылки</h2>
+        {% for mailing in current_mailings %}
+            <div class="current-mailing-item{% if forloop.counter > 3 %} hidden{% endif %}">
+            <h3>Рассылка №{{ mailing.id }}</h3>
+            <p>Текст рассылки: {{ mailing.text|truncatechars:50 }}</p>
+            <p>Начало рассылки: {{ mailing.start_time }}</p>
+            <p>Окончание рассылки: {{ mailing.end_time }}</p>
+            {% if mailing.codes_filter %}
+                <p>Фильтр по кодам: {{ mailing.codes_filter }}</p>
+            {% endif %}
+            {% if mailing.tags_filter %}
+                <p>Фильтр по тэгам: {{ mailing.tags_filter }}</p>
+            {% endif %}
+            <div>Статистика:</div>
+            <p>Успешно
+                отправлены: {{ current_messages|get_msgs_stats_for_mailing:mailing|get_spec_msgs_stats:"sent_messages" }}
+                сообщений</p>
+            <p>Не отправлены и уже не
+                будут: {{ current_messages|get_msgs_stats_for_mailing:mailing|get_spec_msgs_stats:"failed_messages" }}
+                сообщений</p>
+            <p>Ожидают
+                отправки: {{ current_messages|get_msgs_stats_for_mailing:mailing|get_spec_msgs_stats:"waiting_messages" }}
+                сообщений</p>
+            <p>Ожидают повторной
+                отправки: {{ current_messages|get_msgs_stats_for_mailing:mailing|get_spec_msgs_stats:"failed_waiting_messages" }}
+                сообщений</p>
+            <div class="buttons">
+                <a class="edit-button" href="{% url 'mailing:update_mailing' mailing.id %}">Редактировать</a>
+                <form method="POST" action="{% url 'mailing:delete_mailing' mailing.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-button">Удалить</button>
+                </form>
+            </div>
+        {% endfor %}
+        {% if current_mailings|length > 3 %}
+            <a href="#" class="show-more-button" id="show-more-current">Показать больше</a>
+        {% endif %}
+        </div>
+
+        <div class="block">
+            <h2>Завершенные рассылки</h2>
+            {% for mailing in previous_mailings %}
+                <div class="previous-mailing-item{% if forloop.counter > 3 %} hidden{% endif %}">
+                    <h3>Рассылка №{{ mailing.id }}</h3>
+                    <p>Текст рассылки: {{ mailing.text|truncatechars:50 }}</p>
+                    <p>Начало рассылки: {{ mailing.start_time }}</p>
+                    <p>Окончание рассылки: {{ mailing.end_time }}</p>
+                    {% if mailing.codes_filter %}
+                        <p>Фильтр по кодам: {{ mailing.codes_filter }}</p>
+                    {% endif %}
+                    {% if mailing.tags_filter %}
+                        <p>Фильтр по тэгам: {{ mailing.tags_filter }}</p>
+                    {% endif %}
+                    <div>Статистика:</div>
+                    <p>Успешно
+                        отправлены: {{ previous_messages|get_msgs_stats_for_mailing:mailing|get_spec_msgs_stats:"sent_messages" }}
+                        сообщений</p>
+                    <p>Не отправлены и уже не
+                        будут: {{ previous_messages|get_msgs_stats_for_mailing:mailing|get_spec_msgs_stats:"failed_messages" }}
+                        сообщений</p>
+                    <p>Ожидают
+                        отправки: {{ previous_messages|get_msgs_stats_for_mailing:mailing|get_spec_msgs_stats:"waiting_messages" }}
+                        сообщений</p>
+                    <p>Ожидают повторной
+                        отправки: {{ previous_messages|get_msgs_stats_for_mailing:mailing|get_spec_msgs_stats:"failed_waiting_messages" }}
+                        сообщений</p>
+                </div>
+            {% endfor %}
+            {% if previous_mailings|length > 3 %}
+                <a href="#" class="show-more-button" id="show-more-previous">Показать больше</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function showAllMailings(buttonId, itemsClass) {
+                const button = document.getElementById(buttonId);
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const items = document.querySelectorAll('.' + itemsClass);
+                    items.forEach(function (item) {
+                        item.classList.remove('hidden');
+                    });
+                    button.style.display = 'none';
+                });
+            }
+
+            if (document.querySelectorAll('.future-mailing-item').length > 3) {
+                showAllMailings('show-more-future', 'future-mailing-item')
+            }
+            if (document.querySelectorAll('.current-mailing-item').length > 3) {
+                showAllMailings('show-more-current', 'current-mailing-item')
+            }
+            if (document.querySelectorAll('.previous-mailing-item').length > 3) {
+                showAllMailings('show-more-previous', 'previous-mailing-item')
+            }
+        });
+    </script>
+
+{% endblock %}

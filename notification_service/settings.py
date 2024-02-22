@@ -28,7 +28,7 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, "notification_service", "templates")
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG")
 
 ALLOWED_HOSTS = ['127.0.0.1:3000', 'localhost:3000', 'localhost']
 

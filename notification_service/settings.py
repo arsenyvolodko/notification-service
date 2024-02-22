@@ -15,7 +15,7 @@ from pathlib import Path
 import dj_database_url
 from dotenv import load_dotenv
 
-# load_dotenv()
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,7 +30,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG")
 
-ALLOWED_HOSTS = ['127.0.0.1:3000', 'localhost:3000', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1:3000', 'localhost:3000', 'localhost', '91.201.113.17', '91.201.113.17:3000']
 
 # Application definition
 INSTALLED_APPS = [
